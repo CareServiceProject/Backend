@@ -107,6 +107,7 @@ public class ServiceApplyService {
         return CommonResponseDto.builder().code(200).success(true).message("요청하신 서비스가 성공적으로 취소되었습니다.").build();
     }
 
+    @Transactional
     public UserMyPageDto findByMyPage(CustomUserDetails customUserDetails) {
         String userId = customUserDetails.getUser().getUserId();
         UserEntity userEntity = findById(customUserDetails);
