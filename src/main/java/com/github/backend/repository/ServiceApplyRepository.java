@@ -6,7 +6,9 @@ import com.github.backend.web.entity.UserEntity;
 import com.github.backend.web.entity.custom.CustomUserDetails;
 import com.github.backend.web.entity.enums.CareStatus;
 import com.github.backend.web.entity.enums.MateCareStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -23,11 +25,6 @@ public interface ServiceApplyRepository extends JpaRepository<CareEntity, Long >
     
     Integer countByCareStatus(CareStatus careStatus);
 
-    @Query("SELECT c.mate FROM CareEntity c " +
-          "INNER JOIN c.mate m " +
-          "WHERE m.mateCid = :mateCid")
-    Optional<CareEntity> findByMateCid(Long mateCid);
-
-
-    CareEntity findCareEntityByContent(String content);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<CareEntity> findById(Long Id);
 }

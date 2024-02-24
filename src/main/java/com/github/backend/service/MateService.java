@@ -44,6 +44,9 @@ public class MateService {
     public CommonResponseDto applyCaring(Long careId, CustomMateDetails customMateDetails) {
         Long mateId = customMateDetails.getMate().getMateCid();
         CareEntity care = careRepository.findById(careId).orElseThrow(()->new CommonException("요청하신 도움신청건을 찾을 수 없습니다.", ErrorCode.FAIL_RESPONSE));
+        if(care.getCareStatus().equals(CareStatus.IN_PROGRESS)){
+            throw new CommonException("요청하신 도움은 이미 지원완료되었습니다. 다른 도움에 지원해주세요!",ErrorCode.BAD_REQUEST_RESPONSE);
+        }
         MateEntity mate = mateRepository.findById(mateId).orElseThrow(()->new CommonException("해당 메이트를 찾을 수 없습니다.", ErrorCode.FAIL_RESPONSE));
         // 만약 동일한 날짜 같은 시간대에 이미 신청한 도움이 있다면 신청불가능하게끔하기
         List<MateCareHistoryEntity> mateCareHistoryEntities = mateCareHistoryRepository.findAllByMateAndMateCareStatus(mate, MateCareStatus.IN_PROGRESS);
