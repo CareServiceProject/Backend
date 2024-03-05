@@ -105,19 +105,10 @@ public class MateService {
     }
 
 
-    public List<CaringDto> viewApplyList(String careStatus,CustomMateDetails customMateDetails) {
+    public List<CaringDto> viewApplyList(String mateCareStatus,CustomMateDetails customMateDetails) {
         MateEntity mate = mateRepository.findById(customMateDetails.getMate().getMateCid()).orElseThrow(() -> new CommonException("해당 메이트를 찾을 수 없습니다.", ErrorCode.FAIL_RESPONSE));
-        MateCareStatus mateCareStatus;
-        if (careStatus.equalsIgnoreCase("IN_PROGRESS")) {
-            mateCareStatus = MateCareStatus.IN_PROGRESS;
-        } else if (careStatus.equalsIgnoreCase("HELP_DONE")) {
-            mateCareStatus = MateCareStatus.HELP_DONE;
-        } else if (careStatus.equalsIgnoreCase("cancel")) {
-            mateCareStatus = MateCareStatus.CANCEL;
-        } else {
-            throw new InvalidValueException("상태를 잘못입력하였습니다. 다시 입력해주세요.");
-        }
-        List<MateCareHistoryEntity> mateCareHistoryList = mateCareHistoryRepository.findAllByMateAndMateCareStatus(mate, mateCareStatus);
+        MateCareStatus status = MateCareStatus.valueOfTerm(mateCareStatus.toUpperCase());
+        List<MateCareHistoryEntity> mateCareHistoryList = mateCareHistoryRepository.findAllByMateAndMateCareStatus(mate, status);
         List<CareEntity> careList = mateCareHistoryList.stream().map(MateCareHistoryEntity::getCare).toList();
         List<ProfileImageEntity> userImageList = careList.stream().map(careEntity -> careEntity.getUser().getProfileImage())
                 .map(profileImage -> Optional.ofNullable(profileImage).orElse(null)).toList();
